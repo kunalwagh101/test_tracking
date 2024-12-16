@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+<title>
+  {% block title %}
+    Test
+  {% endblock %}
+</title>
+
+{% block content %}
+  <body>
+    <form id="questionForm" method="post" action="{% url 'submit_all_solutions' %}">
+      <div class="card" style="padding: 20px; margin-bottom: 20px; background-color: antiquewhite;">
+        <h2 class="mb-4">Python Test</h2>
+        {% csrf_token %}
+        <div class="question-container">
+          {% for question in questions %}
+            <h4>Question {{ forloop.counter }}:</h4>
+            <pre style="font-family: sans-serif;">{{ question.question_text }}</pre>
+            <div class="form-group mt-2">
+              <label for="{{ question.id }}">Your Answer:</label>
+              <textarea class="form-control" name="{{ question.id }}" rows="5" style="white-space: pre-wrap;"></textarea>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="d-flex justify-content-center align-items-center" style="margin-bottom: 20px;">
+        <input type="submit" class="btn btn-primary" value="Submit All Answers" />
+      </div>
+    </form>
+
+    <script>
+        var countdownMinutes = {{ time_allotted }};
+        var countdownSeconds = 0;
+      
+        function updateCountdown() {
+          updateCountdownInNavbar(countdownMinutes, countdownSeconds);
+      
+          if (countdownMinutes === 0 && countdownSeconds === 0) {
+            document.getElementById('questionForm').submit();
+          } else {
+            if (countdownSeconds === 0) {
+              countdownMinutes--;
+              countdownSeconds = 59;
+            } else {
+              countdownSeconds--;
+            }
+            setTimeout(updateCountdown, 1000);
+          }
+        }
+      
+        window.onload = function () {
+          updateCountdown();
+        };
+      </script>
+  </body>
+{% endblock %}
